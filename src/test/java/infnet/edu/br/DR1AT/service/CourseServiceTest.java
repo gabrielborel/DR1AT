@@ -41,80 +41,68 @@ class CourseServiceTest {
     @BeforeEach
     void setUp() {
         courseRequestDTO = new CourseRequestDTO(
-                "Java Programming",
-                "JAVA101"
+                "Curso 1",
+                "CURSO01"
         );
 
         course = new Course();
         course.setId(1L);
-        course.setName("Java Programming");
-        course.setCode("JAVA101");
+        course.setName("Curso 1");
+        course.setCode("CURSO01");
 
         courseResponseDTO = new CourseResponseDTO(
                 1L,
-                "Java Programming",
-                "JAVA101",
+                "Curso 1",
+                "CURSO01",
                 List.of()
         );
     }
 
     @Test
-    void save_ShouldCreateCourse_WhenValidData() {
-        // Given
+    void shouldCreateCourseWhenDataIsValid() {
         when(courseRepository.findByCode(anyString())).thenReturn(Optional.empty());
         when(courseMapper.toEntity(any())).thenReturn(course);
         when(courseRepository.save(any())).thenReturn(course);
         when(courseMapper.toResponseDTO(any())).thenReturn(courseResponseDTO);
 
-        // When
         CourseResponseDTO result = courseService.save(courseRequestDTO);
 
-        // Then
         assertNotNull(result);
-        assertEquals("Java Programming", result.name());
-        assertEquals("JAVA101", result.code());
+        assertEquals("Curso 1", result.name());
+        assertEquals("CURSO01", result.code());
     }
 
     @Test
-    void save_ShouldThrowException_WhenCodeAlreadyExists() {
-        // Given
+    void shouldThrowExceptionWhenCodeAlreadyExists() {
         when(courseRepository.findByCode(courseRequestDTO.code())).thenReturn(Optional.of(course));
 
-        // When & Then
         assertThrows(DuplicateCourseException.class, () -> courseService.save(courseRequestDTO));
         verify(courseRepository, never()).save(any());
     }
 
     @Test
-    void findAll_ShouldReturnListOfCourses() {
-        // Given
+    void shouldReturnAllCourses() {
         when(courseRepository.findAll()).thenReturn(List.of(course));
         when(courseMapper.toResponseDTO(any())).thenReturn(courseResponseDTO);
 
-        // When
         List<CourseResponseDTO> result = courseService.findAll();
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.size());
     }
 
     @Test
-    void deleteById_ShouldDeleteCourse_WhenCourseExists() {
-        // Given
+    void shouldDeleteCourseWhenCourseExists() {
         when(courseRepository.existsById(1L)).thenReturn(true);
 
-        // When & Then
         assertDoesNotThrow(() -> courseService.deleteById(1L));
         verify(courseRepository).deleteById(1L);
     }
 
     @Test
-    void deleteById_ShouldThrowException_WhenCourseNotExists() {
-        // Given
+    void shouldThrowExceptionWhenCourseDoesNotExist() {
         when(courseRepository.existsById(1L)).thenReturn(false);
 
-        // When & Then
         assertThrows(CourseNotFoundException.class, () -> courseService.deleteById(1L));
     }
 }

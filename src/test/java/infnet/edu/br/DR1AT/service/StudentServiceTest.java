@@ -44,80 +44,70 @@ class StudentServiceTest {
     @BeforeEach
     void setUp() {
         studentRequestDTO = new StudentRequestDTO(
-                "John Doe",
+                "Aluno 1",
                 "123.456.789-10",
-                "john@example.com",
+                "aluno1@email.com",
                 "(11) 99999-9999",
-                "123 Main St"
+                "Rua 1, 123"
         );
 
         student = new Student();
         student.setId(1L);
-        student.setName("John Doe");
+        student.setName("Aluno 1");
         student.setDocument("123.456.789-10");
-        student.setEmail("john@example.com");
+        student.setEmail("aluno1@email.com");
         student.setPhone("(11) 99999-9999");
-        student.setAddress("123 Main St");
+        student.setAddress("Rua 1, 123");
 
         studentResponseDTO = new StudentResponseDTO(
                 1L,
-                "John Doe",
+                "Aluno 1",
                 "123.456.789-10",
-                "john@example.com",
+                "aluno1@email.com",
                 "(11) 99999-9999",
-                "123 Main St",
+                "Rua 1, 123",
                 List.of()
         );
     }
 
     @Test
-    void save_ShouldCreateStudent_WhenValidData() {
-        // Given
+    void shouldCreateStudentWhenDataIsValid() {
         when(studentRepository.findByDocument(anyString())).thenReturn(Optional.empty());
         when(studentRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(studentMapper.toEntity(any())).thenReturn(student);
         when(studentRepository.save(any())).thenReturn(student);
         when(studentMapper.toResponseDTO(any())).thenReturn(studentResponseDTO);
 
-        // When
         StudentResponseDTO result = studentService.save(studentRequestDTO);
 
-        // Then
         assertNotNull(result);
-        assertEquals("John Doe", result.name());
+        assertEquals("Aluno 1", result.name());
         assertEquals("123.456.789-10", result.document());
     }
 
     @Test
-    void findAll_ShouldReturnListOfStudents() {
-        // Given
+    void shouldReturnAllStudents() {
         when(studentRepository.findAll()).thenReturn(List.of(student));
         when(studentMapper.toResponseDTO(any())).thenReturn(studentResponseDTO);
 
-        // When
         List<StudentResponseDTO> result = studentService.findAll();
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.size());
     }
 
     @Test
-    void deleteById_ShouldDeleteStudent_WhenStudentExists() {
-        // Given
+    void shouldDeleteStudentWhenStudentExists() {
         when(studentRepository.existsById(1L)).thenReturn(true);
 
-        // When & Then
         assertDoesNotThrow(() -> studentService.deleteById(1L));
         verify(studentRepository).deleteById(1L);
     }
 
     @Test
-    void deleteById_ShouldThrowException_WhenStudentNotExists() {
-        // Given
+    void shouldThrowExceptionWhenStudentDoesNotExist() {
         when(studentRepository.existsById(1L)).thenReturn(false);
 
-        // When & Then
         assertThrows(StudentNotFoundException.class, () -> studentService.deleteById(1L));
     }
 }

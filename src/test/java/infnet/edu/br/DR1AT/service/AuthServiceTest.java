@@ -23,7 +23,7 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Test
-    void login_withValidCredentials_returnsToken() {
+    void shouldReturnTokenWhenCredentialsAreValid() {
         LoginRequestDTO req = new LoginRequestDTO("professor", "professor123");
         when(jwtTokenUtil.generateToken("professor")).thenReturn("abc.token");
 
@@ -37,11 +37,10 @@ class AuthServiceTest {
     }
 
     @Test
-    void login_withInvalidCredentials_throwsBadCredentials() {
-        LoginRequestDTO req = new LoginRequestDTO("wrong", "x");
+    void shouldThrowExceptionWhenCredentialsAreInvalid() {
+        LoginRequestDTO req = new LoginRequestDTO("Usuario 1", "senha123");
 
         assertThrows(BadCredentialsException.class, () -> authService.login(req));
         verify(jwtTokenUtil, never()).generateToken(any());
     }
 }
-

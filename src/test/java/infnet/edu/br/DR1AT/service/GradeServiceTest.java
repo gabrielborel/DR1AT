@@ -62,12 +62,12 @@ class GradeServiceTest {
 
         student = new Student();
         student.setId(1L);
-        student.setName("John Doe");
+        student.setName("Aluno 1");
 
         course = new Course();
         course.setId(1L);
-        course.setName("Java Programming");
-        course.setCode("JAVA101");
+        course.setName("Curso 1");
+        course.setCode("CURSO01");
 
         grade = new Grade();
         grade.setId(1L);
@@ -76,14 +76,13 @@ class GradeServiceTest {
         grade.setGrade(new BigDecimal("8.5"));
 
         gradeResponseDTO = new GradeResponseDTO(
-                1L, 1L, "John Doe", 1L, "Java Programming", "JAVA101",
+                1L, 1L, "Aluno 1", 1L, "Curso 1", "CURSO01",
                 new BigDecimal("8.5"), true
         );
     }
 
     @Test
-    void assignGrade_ShouldCreateGrade_WhenValidData() {
-        // Given
+    void shouldCreateGradeWhenDataIsValid() {
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(gradeRepository.existsByStudentIdAndCourseId(1L, 1L)).thenReturn(false);
@@ -91,74 +90,60 @@ class GradeServiceTest {
         when(gradeRepository.save(any())).thenReturn(grade);
         when(gradeMapper.toResponseDTO(any())).thenReturn(gradeResponseDTO);
 
-        // When
         GradeResponseDTO result = gradeService.assignGrade(gradeRequestDTO);
 
-        // Then
         assertNotNull(result);
         assertEquals(new BigDecimal("8.5"), result.grade());
         assertTrue(result.approved());
     }
 
     @Test
-    void assignGrade_ShouldThrowException_WhenStudentNotFound() {
-        // Given
+    void shouldThrowExceptionWhenStudentNotFound() {
         when(studentRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // When & Then
         assertThrows(StudentNotFoundException.class, () -> gradeService.assignGrade(gradeRequestDTO));
     }
 
     @Test
-    void assignGrade_ShouldThrowException_WhenCourseNotFound() {
-        // Given
+    void shouldThrowExceptionWhenCourseNotFound() {
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // When & Then
         assertThrows(CourseNotFoundException.class, () -> gradeService.assignGrade(gradeRequestDTO));
     }
 
     @Test
-    void assignGrade_ShouldThrowException_WhenGradeAlreadyExists() {
-        // Given
+    void shouldThrowExceptionWhenGradeAlreadyExists() {
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
         when(gradeRepository.existsByStudentIdAndCourseId(1L, 1L)).thenReturn(true);
 
-        // When & Then
         assertThrows(DuplicateGradeException.class, () -> gradeService.assignGrade(gradeRequestDTO));
     }
 
     @Test
-    void findApprovedStudentsByCourse_ShouldReturnApprovedGrades() {
-        // Given
+    void shouldReturnApprovedStudentsWhenCourseExists() {
         when(courseRepository.existsById(1L)).thenReturn(true);
         when(gradeRepository.findApprovedStudentsByCourse(1L)).thenReturn(List.of(grade));
         when(gradeMapper.toResponseDTO(any())).thenReturn(gradeResponseDTO);
 
-        // When
         List<GradeResponseDTO> result = gradeService.findApprovedStudentsByCourse(1L);
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.size());
         assertTrue(result.get(0).approved());
     }
 
     @Test
-    void findApprovedStudentsByCourse_ShouldThrowException_WhenCourseNotFound() {
-        // Given
+    void shouldThrowExceptionWhenCourseNotFoundForApproved() {
         when(courseRepository.existsById(1L)).thenReturn(false);
 
-        // When & Then
         assertThrows(CourseNotFoundException.class, () -> gradeService.findApprovedStudentsByCourse(1L));
         verify(gradeRepository, never()).findApprovedStudentsByCourse(any());
     }
 
     @Test
-    void findFailedStudentsByCourse_ShouldReturnFailedGrades_WhenCourseExists() {
-        // Given
+    void shouldReturnFailedStudentsWhenCourseExists() {
         Grade failedGrade = new Grade();
         failedGrade.setId(2L);
         failedGrade.setStudent(student);
@@ -166,7 +151,7 @@ class GradeServiceTest {
         failedGrade.setGrade(new BigDecimal("5.0"));
 
         GradeResponseDTO failedGradeResponse = new GradeResponseDTO(
-                2L, 1L, "John Doe", 1L, "Java Programming", "JAVA101",
+                2L, 1L, "Aluno 1", 1L, "Curso 1", "CURSO01",
                 new BigDecimal("5.0"), false
         );
 
@@ -175,10 +160,8 @@ class GradeServiceTest {
         when(gradeRepository.findFailedStudentsByCourse(1L)).thenReturn(failedGrades);
         when(gradeMapper.toResponseDTO(failedGrade)).thenReturn(failedGradeResponse);
 
-        // When
         List<GradeResponseDTO> result = gradeService.findFailedStudentsByCourse(1L);
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(failedGradeResponse.id(), result.get(0).id());
@@ -187,31 +170,25 @@ class GradeServiceTest {
     }
 
     @Test
-    void findFailedStudentsByCourse_ShouldThrowException_WhenCourseNotFound() {
-        // Given
+    void shouldThrowExceptionWhenCourseNotFoundForFailed() {
         when(courseRepository.existsById(1L)).thenReturn(false);
 
-        // When & Then
         assertThrows(CourseNotFoundException.class, () -> gradeService.findFailedStudentsByCourse(1L));
         verify(gradeRepository, never()).findFailedStudentsByCourse(any());
     }
 
     @Test
-    void deleteById_ShouldDeleteGrade_WhenGradeExists() {
-        // Given
+    void shouldDeleteGradeWhenGradeExists() {
         when(gradeRepository.existsById(1L)).thenReturn(true);
 
-        // When & Then
         assertDoesNotThrow(() -> gradeService.deleteById(1L));
         verify(gradeRepository).deleteById(1L);
     }
 
     @Test
-    void deleteById_ShouldThrowException_WhenGradeNotExists() {
-        // Given
+    void shouldThrowExceptionWhenGradeDoesNotExist() {
         when(gradeRepository.existsById(1L)).thenReturn(false);
 
-        // When & Then
         assertThrows(GradeNotFoundException.class, () -> gradeService.deleteById(1L));
     }
 }

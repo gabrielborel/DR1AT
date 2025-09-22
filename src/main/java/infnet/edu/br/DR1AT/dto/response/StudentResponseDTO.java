@@ -9,5 +9,5 @@ public record StudentResponseDTO(
         String email,
         String phone,
         String address,
-        List<CourseGradeDTO> coursesWithGrades
+        List<CourseGradeDTO> courses
 ) {}
