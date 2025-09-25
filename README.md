@@ -1,12 +1,12 @@
 # DR1AT - Sistema de Gerenciamento Acadêmico
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
 - Java 17
 - Docker e Docker Compose
 - Maven
 
-## 🚀 Como executar o projeto
+## Como executar o projeto
 
 ### 1. Subir o banco PostgreSQL
 
@@ -15,17 +15,7 @@
 docker-compose up -d
 ```
 
-### 2. Verificar se o banco está funcionando
-
-```bash
-# Ver logs dos containers
-docker-compose logs postgres
-
-# Verificar containers rodando
-docker ps
-```
-
-### 3. Executar a aplicação
+### 2. Executar a aplicação
 
 ```bash
 # Modo desenvolvimento
@@ -35,7 +25,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 mvn spring-boot:run
 ```
 
-## 🐘 Informações do Banco PostgreSQL
+## Informações do Banco PostgreSQL
 
 ### Ambiente de Desenvolvimento (local)
 - **Host:** localhost
@@ -44,7 +34,7 @@ mvn spring-boot:run
 - **Usuário:** dr1at
 - **Senha:** dr1at
 
-## 🔧 PgAdmin (Interface Web)
+## PgAdmin (Interface Web)
 
 Acesse: http://localhost:5050
 
@@ -58,7 +48,7 @@ Acesse: http://localhost:5050
 4. Username: dr1at
 5. Password: dr1at
 
-## 🔐 Autenticação
+## Autenticação
 
 ### Credenciais do Professor:
 - **Username:** professor
@@ -84,7 +74,7 @@ Content-Type: application/json
 }
 ```
 
-### ⚠️ **Importante - Usar JWT nas Requisições:**
+### **Importante - Usar JWT nas Requisições:**
 
 Após fazer login, você receberá um **JWT token** que deve ser incluído no header `Authorization` de **todas as outras requisições**:
 
@@ -100,11 +90,11 @@ Content-Type: application/json
 ```
 
 **Observações:**
-- 🔑 O token tem validade de **24 horas** (86400 segundos)
-- 🚫 Sem o token, você receberá erro **403 Forbidden**
-- ⏰ Após expirar, faça login novamente para obter um novo token
+-  O token tem validade de **24 horas** (86400 segundos)
+- Sem o token, você receberá erro **403 Forbidden**
+- Após expirar, faça login novamente para obter um novo token
 
-## 📚 Principais Endpoints
+## Endpoints da aplicação
 
 ### Autenticação
 - `POST /api/auth/login` - Login (público)
@@ -126,7 +116,7 @@ Content-Type: application/json
 - `GET /api/grades/course/{courseId}/failed` - Alunos reprovados (<7.0)
 - `DELETE /api/grades/{id}` - Deletar nota
 
-## 🚀 Deploy no Render
+## Deploy da aplicação
 
 O projeto está configurado para deploy automático no Render. O Dockerfile utiliza multi-stage build:
 
@@ -137,9 +127,9 @@ O projeto está configurado para deploy automático no Render. O Dockerfile util
 - `SPRING_PROFILES_ACTIVE=prod`
 - `PORT=8080` (configurado automaticamente pelo Render)
 
-## ⚙️ Perfis de Execução
+## Perfis de Execução
 
-### Desenvolvimento (com logs detalhados)
+### Desenvolvimento
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
@@ -157,28 +147,9 @@ mvn spring-boot:run
 - Logs SQL desabilitados
 - Logs apenas de nível INFO
 
-## 🛠️ Comandos Docker Úteis
+## Notas Importantes
 
-```bash
-# Subir apenas o PostgreSQL
-docker-compose up -d postgres
-
-# Ver logs em tempo real
-docker-compose logs -f postgres
-
-# Parar todos os serviços
-docker-compose down
-
-# Remover volumes (limpar dados)
-docker-compose down -v
-
-# Restart dos serviços
-docker-compose restart
-```
-
-## 📝 Notas Importantes
-
-- ⚠️ **Atenção**: O perfil padrão é `prod`, que conecta no banco do Render
+- **Atenção**: O perfil padrão é `prod`, que conecta no banco do Render
 - Para desenvolvimento local, sempre use o perfil `dev`
 - O banco de desenvolvimento recria as tabelas a cada execução
 - O JWT tem expiração de 24 horas (86400 segundos)
